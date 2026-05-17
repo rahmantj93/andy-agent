@@ -9,13 +9,14 @@ tasks: list = []
 
 
 def load_tasks() -> None:
-    """Read tasks from disk into the module-level `tasks` list."""
-    global tasks
+    """Read tasks from disk into the module-level `tasks` list (in place)."""
     if not os.path.exists(TASKS_FILE):
-        tasks = []
+        tasks.clear()
         return
     with open(TASKS_FILE, "r") as f:
-        tasks = json.load(f)
+        loaded = json.load(f)
+    tasks.clear()
+    tasks.extend(loaded)
 
 
 def save_tasks() -> None:
