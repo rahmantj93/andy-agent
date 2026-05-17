@@ -21,15 +21,20 @@ A command-line AI agent that manages your tasks through natural conversation. Bu
 
 ## How it works
 
-Andy is built around the **agent loop** — the core pattern behind every modern AI agent:
+Andy is built around the **agent loop** — the core pattern behind every modern AI agent. A tool result always loops *back* to Claude, which then decides the next step. That loop is the whole essence of an agent:
 
-```text
-User message
-   ↓
-Claude (with tools available)
-   ↓
-stop_reason == "tool_use"?  →  Run the Python function, send result back  →  loop
-stop_reason == "end_turn"?  →  Print final reply, wait for next user input
+```mermaid
+flowchart TD
+    User([User types a message]) --> Andy[andy.py<br/>chat loop]
+    Andy --> Agent[agent.py<br/>step]
+    Agent --> Claude{{Claude API<br/>+ tool schemas}}
+    Claude -->|stop_reason:<br/>end_turn| Reply[Print Andy's reply]
+    Claude -->|stop_reason:<br/>tool_use| Dispatch[tools.py<br/>run_tool]
+    Dispatch --> Func[Execute tool function<br/>add / list / complete / update / prioritize]
+    Func --> Storage[(storage.py<br/>tasks.json)]
+    Storage --> Result[Tool result]
+    Result -->|sent back to Claude| Agent
+    Reply --> User
 ```
 
 The codebase is split by single responsibility:
