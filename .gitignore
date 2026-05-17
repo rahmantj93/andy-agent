@@ -3,3 +3,4 @@ venv/
 __pycache__/
 *.pyc
 tasks.json
+.pytest_cache/
